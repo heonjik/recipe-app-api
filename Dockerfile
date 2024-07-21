@@ -4,17 +4,22 @@ LABEL maintainer="heonjik"
 ENV PYTHONUNBUFFERED 1
 
 COPY ./requirements.txt /tmp/requirements.txt
+COPY ./requirements.dev.txt /tmp/requirements.dev.txt
 COPY ./app /app
 WORKDIR /app
 # defualt working directory when we run the commands on Docker image
 EXPOSE 8000
 # access port
 
+ARG DEV=false
 # define single run command
 RUN python -m venv /py && \
     # creates new vm
     /py/bin/pip install --upgrade pip && \
     /py/bin/pip install -r /tmp/requirements.txt && \
+    if [ $DEV = "true" ]; \
+        then /py/bin/pip install -r /tmp/requirements.dev.txt ; \
+    fi && \
     rm -rf /tmp && \
     # add a user to avoid using root user account
     adduser \
